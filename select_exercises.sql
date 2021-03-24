@@ -10,7 +10,7 @@ select distinct artist
 from albums;
 
 -- 3c. primary key = id
-show create table albums;
+describe albums;
 
 -- 3d. oldest release date = 1967, most recent release date = 2011 - used built in sort feature to determine oldest and most recent dates
 select release_date
