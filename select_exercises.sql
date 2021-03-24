@@ -41,7 +41,7 @@ select name
 from albums
 where sales < 20;
 
--- 4f. Sgt. Pepper's Lonely Hearts Club Band, 1, Abbey Road, Born in the U.S.A., Supernatural - becuase those genre names ("Hard rock" or "Progressive rock") do not exactly match the search ("Rock")
+-- 4f. Sgt. Pepper's Lonely Hearts Club Band, 1, Abbey Road, Born in the U.S.A., Supernatural - because those genre names ("Hard rock" or "Progressive rock") do not exactly match the search ("Rock")
 select name
 from albums
 where genre = "Rock";
