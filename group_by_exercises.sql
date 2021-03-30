@@ -15,7 +15,7 @@ SELECT last_name
 FROM employees
 WHERE last_name LIKE 'E%e'
 GROUP BY last_name;
--- returns 5 records
+-- returns 5 records - Eldridge, Erbe, Erde, Erie, Etalle
 
 -- 4. Write a query to find all unique combinations of first and last names of all employees whose last names start and end with 'E'.
 
