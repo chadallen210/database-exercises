@@ -65,18 +65,30 @@ WHERE emp_no IN (
 
 -- 6. How many current salaries are within 1 standard deviation of the current highest salary? (Hint: you can use a built in function to calculate the standard deviation.) What percentage of all salaries is this?
 		
-SELECT (SELECT count(salary)
+SELECT count(salary)
 FROM salaries
 WHERE to_date > curdate()
 AND salary > (
 	SELECT (max(salary) - std(salary))
 	FROM salaries
 	WHERE to_date > curdate()
+);
+-- returns 83 records
+
+SELECT (
+	SELECT count(salary)
+	FROM salaries
+	WHERE to_date > curdate()
+	AND salary > (
+		SELECT (max(salary) - std(salary))
+		FROM salaries
+		WHERE to_date > curdate()
 ))
 /
 (SELECT count(salary)
 FROM salaries
 WHERE to_date > curdate()) AS '%';
+-- returns 0.0003%
 
 -- BONUS
 -- 1. Find all the department names that currently have female managers.
@@ -85,11 +97,42 @@ SELECT dept_name
 FROM departments
 JOIN dept_manager ON dept_manager.dept_no = departments.dept_no
 JOIN employees ON employees.emp_no = dept_manager.emp_no
-SELECT emp_no
-FROM employees
-WHERE gender = 'F'
-AND emp_no IN (
+WHERE employees.emp_no = (
 	SELECT emp_no
-	FROM dept_manager
-	WHERE to_date > curdate()
+	FROM employees
+	WHERE gender = 'F'
+	AND emp_no IN (
+		SELECT emp_no
+		FROM dept_manager
+		WHERE to_date > curdate())
 );
+-- GRRR!
+		
+-- 2. Find the first and last name of the employee with the highest salary.
+
+SELECT concat(first_name, ' ', last_name) AS 'Full Name'
+FROM employees
+WHERE emp_no = (
+	SELECT emp_no
+	FROM salaries
+	WHERE to_date > curdate()
+	ORDER BY salary
+	LIMIT 1
+);
+-- returns Olivera Baek
+
+-- 3. Find the department name that the employee with the highest salary works in.
+
+SELECT dept_name AS 'Department'
+FROM departments
+WHERE dept_no = (
+	SELECT dept_no
+	FROM dept_emp
+	WHERE emp_no = (
+		SELECT emp_no
+		FROM salaries
+		WHERE to_date > curdate()
+		ORDER BY salary
+		LIMIT 1)
+);
+-- returns Production
