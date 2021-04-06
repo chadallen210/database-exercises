@@ -139,24 +139,25 @@ AND dept_manager.to_date > curdate();
 
 -- 11. Who is the highest paid employee within each department.
 
-SELECT concat(employees.first_name, ' ', employees.last_name) AS 'Employee Name', 'Salary', 'Department Name'
+SELECT concat(e1.first_name, ' ', e1.last_name) AS 'Employee Name', a.salary AS 'Salary', departments.dept_name AS 'Department Name'
 FROM salaries
-JOIN employees ON employees.emp_no = salaries.emp_no
-JOIN dept_emp ON dept_emp.emp_no = employees.emp_no
+JOIN employees AS e1 ON e1.emp_no = salaries.emp_no
+JOIN dept_emp ON dept_emp.emp_no = e1.emp_no
 JOIN departments ON departments.dept_no = dept_emp.dept_no
 JOIN (
-	SELECT max(salary) AS 'Salary', departments.dept_name AS 'Department Name'
+	SELECT max(salary) AS salary, departments.dept_name
 	FROM departments
 	JOIN dept_emp ON dept_emp.dept_no = departments.dept_no
 	JOIN salaries ON salaries.emp_no = dept_emp.emp_no
 	WHERE salaries.to_date > curdate()
 	AND dept_emp.to_date > curdate()
-	GROUP BY dept_emp.dept_no) AS a ON a.dept_no = departments.dept_no
+	GROUP BY dept_emp.dept_no) AS a ON a.dept_name = departments.dept_name
 	AND a.salary = salaries.salary
 WHERE dept_emp.to_date > curdate()
 AND salaries.to_date > curdate();
 
-SELECT max(salary) AS 'Salary', departments.dept_name AS 'Department Name'
+-- subquery for max salary and department
+SELECT max(salary) AS salary, departments.dept_name
 	FROM departments
 	JOIN dept_emp ON dept_emp.dept_no = departments.dept_no
 	JOIN salaries ON salaries.emp_no = dept_emp.emp_no
