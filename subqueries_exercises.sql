@@ -11,8 +11,13 @@ WHERE hire_date = (
 	SELECT hire_date
 	FROM employees
 	WHERE emp_no = 101010
-);
--- returns 69 records
+)
+AND emp_no IN (
+	SELECT emp_no
+	FROM dept_emp
+	WHERE to_date > curdate()
+	);
+-- returns 55 records
 
 -- 2. Find all the titles ever held by all current employees with the first name Aamod.
 	
@@ -24,18 +29,18 @@ AND emp_no IN (
 	FROM employees
 	WHERE first_name = 'Aamod'
 );
--- returns 6 records
+-- returns 6 records, returns 168 records without the DISTINCT filter
 
 -- 3. How many people in the employees table are no longer working for the company? Give the answer in a comment in your code.
 	
 SELECT *
 FROM employees
-WHERE emp_no IN (
+WHERE emp_no NOT IN (
 	SELECT emp_no
 	FROM dept_emp
-	WHERE to_date < curdate()
+	WHERE to_date > curdate()
 );
--- returns 85108 records
+-- returns 59900 records
 
 -- 4. Find all the current department managers that are female. List their names in a comment in your code.
 	
@@ -82,31 +87,31 @@ SELECT (
 	AND salary > (
 		SELECT (max(salary) - std(salary))
 		FROM salaries
-		WHERE to_date > curdate()
-))
+		WHERE to_date > curdate())
+)
 /
 (SELECT count(salary)
 FROM salaries
-WHERE to_date > curdate()) AS '%';
--- returns 0.0003%
+WHERE to_date > curdate()) * 100 AS '%';
+-- returns 0.0346%
 
 -- BONUS
 -- 1. Find all the department names that currently have female managers.
 
-SELECT dept_name
+SELECT dept_name AS 'Department Name'
 FROM departments
 JOIN dept_manager ON dept_manager.dept_no = departments.dept_no
 JOIN employees ON employees.emp_no = dept_manager.emp_no
-WHERE employees.emp_no = (
+JOIN (
 	SELECT emp_no
 	FROM employees
 	WHERE gender = 'F'
 	AND emp_no IN (
 		SELECT emp_no
 		FROM dept_manager
-		WHERE to_date > curdate())
-);
--- GRRR!
+		WHERE to_date > curdate())) AS a ON a.emp_no = employees.emp_no
+;
+
 		
 -- 2. Find the first and last name of the employee with the highest salary.
 
@@ -116,10 +121,10 @@ WHERE emp_no = (
 	SELECT emp_no
 	FROM salaries
 	WHERE to_date > curdate()
-	ORDER BY salary
+	ORDER BY salary DESC
 	LIMIT 1
 );
--- returns Olivera Baek
+-- returns Tokuyasu Pesch
 
 -- 3. Find the department name that the employee with the highest salary works in.
 
@@ -132,7 +137,7 @@ WHERE dept_no = (
 		SELECT emp_no
 		FROM salaries
 		WHERE to_date > curdate()
-		ORDER BY salary
+		ORDER BY salary DESC
 		LIMIT 1)
 );
--- returns Production
+-- returns Sales
