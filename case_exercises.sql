@@ -18,19 +18,20 @@ JOIN (
 
 SELECT concat(first_name, ' ', last_name) AS 'Full Name',
 	CASE
-	WHEN last_name <= 'H%' THEN 'A-H'
-	WHEN last_name <= 'Q%' THEN 'I-Q'
-	WHEN last_name >= 'R%' THEN 'R-Z'
+	WHEN last_name <= 'I%' THEN 'A-H'
+	WHEN last_name <= 'R%' THEN 'I-Q'
+	ELSE 'R-Z'
 	END AS 'alpha_group'
 FROM employees;
 
 -- 3. How many employees (current or previous) were born in each decade?
 
-SELECT count(*),
+SELECT 
 	CASE
 	WHEN birth_date LIKE '195%' THEN '1950''s'
 	WHEN birth_date LIKE '196%' THEN '1960''s'
-	END AS decade
+	ELSE 'Other'
+	END AS 'Decade', count(*) AS '# Born In'
 FROM employees
 GROUP BY decade;
 
@@ -38,9 +39,9 @@ GROUP BY decade;
 
 SELECT AVG(salary),
 	CASE dept_name
-		WHEN dept_name IN ('research', 'development') THEN 'R&D'
-        WHEN dept_name IN ('sales', 'marketing') THEN 'Sales & Marketing' 
-        WHEN dept_name in ('Production', 'Quality Management') THEN 'Prod & QM'
+		WHEN dept_name IN ('Research', 'Development') THEN 'R&D'
+        WHEN dept_name IN ('Sales', 'Marketing') THEN 'Sales & Marketing' 
+        WHEN dept_name IN ('Production', 'Quality Management') THEN 'Prod & QM'
         ELSE dept_name
         END AS dept_group
 FROM salaries
